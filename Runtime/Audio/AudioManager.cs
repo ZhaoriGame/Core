@@ -6,7 +6,6 @@ using UnityEngine.Audio;
 
 namespace Core.Audio
 {
-	#region External Structures
 
 	/// <summary>
 	/// 音效过度种类
@@ -28,177 +27,52 @@ namespace Core.Audio
 	}
 
 	/// <summary>
-	/// Background music properties for the AudioManager
+	/// 背景音乐
 	/// </summary>
 	[Serializable]
 	public struct BackgroundMusic
 	{
-		/// <summary>
-		/// The current clip of the background music.
-		/// </summary>
+		
 		public AudioClip CurrentClip;
-		/// <summary>
-		/// The next clip that is about to be played.
-		/// </summary>
+		
 		public AudioClip NextClip;
-		/// <summary>
-		/// The music transition.
-		/// </summary>
+		
 		public MusicTransition MusicTransition;
 		/// <summary>
-		/// The duration of the transition.
+		/// 转换持续时间
 		/// </summary>
 		public float TransitionDuration;
 	}
+	
 
-	/// <summary>
-	/// Structure and properties for a sound effect
-	/// </summary>
-	[Serializable]
-	public class SoundEffect : MonoBehaviour
-	{
-		// TODO :: consider making the Sound Effect multifaceted / multifunctional
-		// meaning you can add a sound effect as a monobehaviour to do other functions
-		// like allow a sound effect play a sound or respond to events
-        [SerializeField] private AudioSource audioSource;
-        [SerializeField] private float originalVolume;
-        [SerializeField] private float duration;
-        [SerializeField] private float playbackPosition;
-        [SerializeField] private float time;
-        [SerializeField] private Action callback;
-        [SerializeField] private bool singleton;
-
-		/// <summary>
-		/// Gets or sets the name of the sound effect.
-		/// </summary>
-		/// <value>The name.</value>
-		public string Name
-		{
-			get { return audioSource.clip.name; }
-		}
-
-		/// <summary>
-		/// Gets the length of the sound effect in seconds.
-		/// </summary>
-		/// <value>The length.</value>
-		public float Length
-		{
-			get { return audioSource.clip.length; }
-		}
-
-		/// <summary>
-		/// Gets the playback position in seconds.
-		/// </summary>
-		/// <value>The playback position.</value>
-		public float PlaybackPosition
-		{
-			get { return audioSource.time; }
-		}
-
-		/// <summary>
-		/// Gets or sets the source of the sound effect.
-		/// </summary>
-		/// <value>The source.</value>
-		public AudioSource Source
-		{
-			get{ return audioSource; }
-			set { audioSource = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the original volume of the sound effect.
-		/// </summary>
-		/// <value>The original volume.</value>
-		public float OriginalVolume
-		{
-			get{ return originalVolume; }
-			set { originalVolume = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the duration for the sound effect to play in seconds.
-		/// </summary>
-		/// <value>The duration.</value>
-		public float Duration
-		{
-			get{ return duration; }
-			set { duration = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the time left or remaining for the sound effect to play in seconds.
-		/// </summary>
-		/// <value>The duration.</value>
-		public float Time
-		{
-			get{ return time; }
-			set { time = value; }
-		}
-
-		/// <summary>
-		/// Gets the normalised time left for the sound effect to play.
-		/// </summary>
-		/// <value>The normalised time.</value>
-		public float NormalisedTime
-		{
-			get{ return Time / Duration; }
-		}
-
-		/// <summary>
-		/// Gets or sets the callback that would fire when the sound effect finishes playing.
-		/// </summary>
-		/// <value>The callback.</value>
-		public Action Callback
-		{
-			get{ return callback; }
-			set { callback = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Papae.UnitySDK.Managers.SoundEffect"/> is a singleton.
-		/// Meaning that only one instance of the sound effect is ever allowed to be active.
-		/// </summary>
-		/// <value><c>true</c> if repeat; otherwise, <c>false</c>.</value>
-		public bool Singleton
-		{
-			get{ return singleton; }
-			set { singleton = value; }
-		}
-	}
-
-	#endregion
-
-	/// <summary>
-	/// The manager of all things with regards to sound
-	/// </summary>
+	
 	[RequireComponent(typeof(AudioSource))]
 	public class AudioManager : MonoBehaviour
 	{
 		#region Inspector Variables
 
-		[Header("Background Music Properties")]
+		[Header("背景音乐属性")]
 
-		[Tooltip("Is the background music mute")]
+		[Tooltip("是否静音")]
 		[SerializeField] bool _musicOn = true;
 
-		[Tooltip("The background music volume")]
+		[Tooltip("音量")]
 		[Range(0, 1)]
 		[SerializeField] float _musicVolume = 1f;
 
-		[Tooltip("Use the current music volume settings on initialisation start")]
+		[Tooltip("使用此音量在初始化时")]
 		[SerializeField] bool _useMusicVolOnStart = false;
-
-		[Tooltip("The target group for the background music to route its their signals. If none is to be used, then leave unassigned or blank")]
+		
 		[SerializeField] AudioMixerGroup _musicMixerGroup = null;
 
-		[Tooltip("The exposed volume parameter name of the music mixer group")]
+		[Tooltip("music mixer Group Name")]
 		[SerializeField] string _volumeOfMusicMixer = string.Empty;
 
 		[Space(3)]
 
-		[Header("Sound Effect Properties")]
+		[Header("音效属性")]
 
-		[Tooltip("The sound effects volume")]
+		[Tooltip("SoundFX 是否打开")]
 		[SerializeField] bool _soundFxOn = true;
 
 		[Tooltip("The sound effects volume")]
@@ -208,7 +82,6 @@ namespace Core.Audio
 		[Tooltip("Use the current sound effect volume settings on initialisation start")]
 		[SerializeField] bool _useSfxVolOnStart = false;
 
-		[Tooltip("The target group for the sound effects to route its their signals. If none is to be used, then leave unassigned or blank")]
 		[SerializeField] AudioMixerGroup _soundFxMixerGroup = null;
 
 		[Tooltip("The exposed volume parameter name of the sound effects mixer group")]
@@ -216,52 +89,38 @@ namespace Core.Audio
 
 		[Space(3)]
 
-		[Tooltip("A list of all audio clips attached to the AudioManager")]
 		[SerializeField] List<AudioClip> _playlist = new List<AudioClip>();
 		// TOGO :: Try a Reorderable list for future implementation of the playlist
 		#endregion
 
 		#region Singleton Pattern
 
-		// Singleton placeholder
 		private static AudioManager instance;
-		// Lock instance object for execution
+		//防止多线程同时创建
 		private static object key = new object();
-		// Is application up and running
 		private static bool alive = true;
-
-		/// <summary>
-		/// Current and only running instance of the AudioManager
-		/// </summary>
+		
 		public static AudioManager Instance
 		{
-			// Singleton design pattern
+			
 			get
 			{
-				// Check if application is quitting and AudioManager is destroyed
 				if (!alive)
 				{
 					Debug.LogWarning(typeof(AudioManager) + "' is already destroyed on application quit.");
 					return null;
 				}
 
-				// Check if there is a saved instance
+				
 				if (instance == null)
 				{
-					// Find from the list or hierrachy
 					instance = FindObjectOfType<AudioManager>();
 
-					// If none exists in scene
+					
 					if (instance == null)
 					{
-						// Lock so can't be used by another thread until release. Useful if two AudioManager instances were created simultaneosly
 						lock (key)
 						{
-							//GameObject clone = new GameObject();
-							//clone.SetActive(false);
-							//clone.AddComponent<AudioManager>();
-
-							// Create a new gameobject and add the AudioManager component to the gameobject
 							instance = new GameObject().AddComponent<AudioManager>();
 						}
 					}
@@ -270,114 +129,79 @@ namespace Core.Audio
 				return instance;
 			}
 		}
-
-		/// <summary>
-		/// Prevent calling the consructor of the AudioManager
-		/// </summary>
+		
 		private AudioManager() { }
 
 		#endregion
 
 		#region Public Static Getters
 
-		/// <summary>
-		/// Gets the current music clip.
-		/// </summary>
-		/// <value>The current music clip.</value>
-		public AudioClip CurrentMusicClip
-		{
-			get { return backgroundMusic.CurrentClip; }
-		}
+		
+		public AudioClip CurrentMusicClip => backgroundMusic.CurrentClip;
 
-		/// <summary>
-		/// Current list or pool of the sound effects
-		/// </summary>
-		public List<SoundEffect> SoundFxPool
-		{
-			get { return sfxPool; }
-		}
+		
+		public List<SoundEffect> SoundFxPool => sfxPool;
 
-		/// <summary>
-		/// List of audio clips attached to the AudioManager
-		/// </summary>
-		public List<AudioClip> Playlist
-		{
-			get { return _playlist; }
-		}
+		
+		public List<AudioClip> Playlist => _playlist;
 
-		/// <summary>
-		/// Is the AudioManager processing any background music
-		/// </summary>
-		public bool IsMusicPlaying
-		{
-			get { return musicSource != null && musicSource.isPlaying; }
-		}
+		
+		public bool IsMusicPlaying => musicSource != null && musicSource.isPlaying;
 
-		/// <summary>
-		/// Gets or sets the music volume.
-		/// </summary>
-		/// <value>The music volume.</value>
+		
 		public float MusicVolume
 		{
-			get { return _musicVolume; }
-			set { SetBGMVolume (value); }
+			get => _musicVolume;
+			set => SetBGMVolume (value);
 		}
 
-		/// <summary>
-		/// Gets or sets the sound volume.
-		/// </summary>
-		/// <value>The sound volume.</value>
+		
 		public float SoundVolume
 		{
-			get { return _soundFxVolume; }
-			set { SetSFXVolume (value); }
+			get => _soundFxVolume;
+			set => SetSFXVolume (value);
 		}
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the music is on.
-		/// </summary>
-		/// <value><c>true</c> if this instance is music on; otherwise, <c>false</c>.</value>
+		
 		public bool IsMusicOn
 		{
-			get { return _musicOn; }
-			set { ToggleBGMMute (value); }
+			get => _musicOn;
+			set => ToggleBGMMute (value);
 		}
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the sound is on.
-		/// </summary>
-		/// <value><c>true</c> if this instance is sound on; otherwise, <c>false</c>.</value>
+		
 		public bool IsSoundOn
 		{
-			get { return _soundFxOn; }
-			set { ToggleSFXMute (value); }
+			get => _soundFxOn;
+			set => ToggleSFXMute (value);
 		}
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance is master mute.
-		/// </summary>
-		/// <value><c>true</c> if this instance is master mute; otherwise, <c>false</c>.</value>
+		
 		public bool IsMasterMute
 		{
-			get { return !_musicOn && !_soundFxOn; }
-			set { ToggleMute(value); }
+			get => !_musicOn && !_soundFxOn;
+			set => ToggleMute(value);
 		}
 
 		#endregion
 
 		#region Private Static Variables
 
-		// Pool of sound effects managed by the AudioManager
+		
 		List<SoundEffect> sfxPool = new List<SoundEffect>();
-		// Background music managed by the AudioManager
+		
 		static BackgroundMusic backgroundMusic;
-		// Audio source for both the current music and the next music if crossfade transition is active 
+		
 		static AudioSource musicSource = null, crossfadeSource = null;
-		// Volume placehlder properties for the current music, sound effect, and the vol limit of the current music
-		static float currentMusicVol = 0, currentSfxVol = 0, musicVolCap = 0, savedPitch = 1f;
-		// Status to detect when the sound effect mute status has changed
+
+		private static float currentMusicVol = 0;
+		private static float currentSfxVol = 0;
+		private static float musicVolCap = 0;
+		private static float savedPitch = 1f;
+		
+		
 		static bool musicOn = false, sfxOn = false;
-		// Timer countdown used by the Fade transitions
+		// 过度时间
 		static float transitionTime;
 
 		// Player Prefabs store keys
@@ -390,102 +214,72 @@ namespace Core.Audio
 
 		#region Initialisation Functions
 
-		/// <summary>
-		/// Inherited Monobehavior Function.
-		/// </summary>
+	
 		void OnDestroy()
 		{
 			StopAllCoroutines();
 			SaveAllPreferences();
 		}
-
-		/// <summary>
-		/// When your application quits, it destroys objects in a random order.
-		/// In principle, you shouldn't get to calll the AudioManager when your application quits or is quitting.
-		/// If any script calls Instance after it has been destroyed, it will create a buggy ghost object that will stay on the Editor scene
-		/// So, this was made to be sure we're not creating that buggy ghost object.
-		/// </summary>
+		
 		void OnApplicationExit()
 		{
 			alive = false;
 		}
-
-		/// <summary>
-		/// AudioManager initialisation tasks
-		/// </summary>
+		
 		void Initialise()
 		{
-			// Set proper name of the gameobject
 			gameObject.name = "AudioManager";
 
-			// Initialises the sound options used by the AudioManager
 			_musicOn = LoadBGMMuteStatus();
 			_musicVolume = _useMusicVolOnStart ? _musicVolume : LoadBGMVolume();
 			_soundFxOn = LoadSFXMuteStatus();
 			_soundFxVolume = _useSfxVolOnStart ? _soundFxVolume : LoadSFXVolume();
 
-			// Initialises the audio source used by the background music
+			
 			if (musicSource == null)
 			{
 				musicSource = gameObject.GetComponent<AudioSource>();
-				// If none exists, create one and attach to AudioManager
-				musicSource = musicSource ?? gameObject.AddComponent<AudioSource>();
+				musicSource = musicSource ? musicSource : gameObject.AddComponent<AudioSource>();
 			}
 
 			musicSource = ConfigureAudioSource(musicSource);
-
-			// Make object persist throughout lifetime of application (including in between scene transitions)
 			DontDestroyOnLoad(this.gameObject);
 		}
 
-		/// <summary>
-		/// Inherited Monobehavior Function.
-		/// </summary>
+		
 		void Awake()
 		{
 			if (instance == null)
 			{
-				// Store the instance as a singleton 
 				instance = this;
-				// Initialise the AudioManager
 				Initialise();
 			}
 			else if (instance != this)
 			{
-				// Get rid of any other instances if they exist. Only one instance is permitted or allowed
+			
 				Destroy(this.gameObject);
 			}
 		}
 
-		/// <summary>
-		/// Inherited Monobehavior Function.
-		/// </summary>
+	
 		void Start()
 		{
 			if (musicSource != null)
 			{
-				// this is here because the mixer group float can't be set on awake
-				// spent amost 4 hours trying to figure out why... well didn't know until I ran some tests 
+				//todo 放到Awake
 				StartCoroutine(OnUpdate());
 			}
 		}
 
-		/// <summary>
-		/// Creates an audio source with 2D music settings based on some internal properties
-		/// </summary>
-		/// <returns>An AudioSource with 2D features</returns>
+	
 		AudioSource ConfigureAudioSource(AudioSource audioSource)
 		{
 			audioSource.outputAudioMixerGroup = _musicMixerGroup;
 			audioSource.playOnAwake = false;
-			// Set to 2D AudioSource
 			audioSource.spatialBlend = 0;
 			audioSource.rolloffMode = AudioRolloffMode.Linear;
-			// Set the loop setting to true to loop the clip forever
 			audioSource.loop = true;
-			// Set the volume level of the AudioSource
 			audioSource.volume = LoadBGMVolume();
-			// Set the mute settings of the AudioSource
 			audioSource.mute = !_musicOn;
 
 			return audioSource;
@@ -495,71 +289,59 @@ namespace Core.Audio
 
 		#region Update Functions
 
-		/// <summary>
-		/// Manages each sound effect in the sound effect pool
-		/// Called during OnUpdate
-		/// </summary>
+		
 		private void ManageSoundEffects()
 		{
-			// Loop through all active sound effects
 			for (int i = sfxPool.Count - 1; i >= 0; i--)
 			{
 				SoundEffect sfx = sfxPool[i];
-				// edit as long as sound is playing and duration of sound effect is not set to forever
-				// meaning user has to manually stop the sound effect
-                if (sfx.Source.isPlaying && !float.IsPositiveInfinity(sfx.Time))
+				if (sfx.Source.isPlaying && !float.IsPositiveInfinity(sfx.Time))
 				{
-					// Update the duration and return back to pool
+					
 					sfx.Time -= Time.deltaTime;
 					sfxPool[i] = sfx;
 				}
-
-                // If time is up :: also fixed cut issues here: previous threshold value was 0.09f
+				
                 if (sfxPool[i].Time <= 0.0001f || HasPossiblyFinished(sfxPool[i]))
 				{
 					sfxPool[i].Source.Stop();
-					// Fire a callback function, if it has one
-					if (sfxPool[i].Callback != null)
-					{
-						sfxPool[i].Callback.Invoke();
-					}
-
-					// Destroy the host
+					sfxPool[i].Callback?.Invoke();
 					Destroy(sfxPool[i].gameObject);
-
-					// Delete placeholder to host in the pool
 					sfxPool.RemoveAt(i);
 					break;
 				}
 			}
 		}
-
-        // This extra piece of code simple makes sure that the sound has cbeen ompleted
+		
         bool HasPossiblyFinished(SoundEffect soundEffect)
         {
             return !soundEffect.Source.isPlaying && FloatEquals(soundEffect.PlaybackPosition, 0) && soundEffect.Time <= 0.09f;
         }
 
-        bool FloatEquals(float num1, float num2, float threshold = .0001f)
+        /// <summary>
+        /// 比较Float
+        /// </summary>
+        /// <param name="num1"></param>
+        /// <param name="num2"></param>
+        /// <param name="threshold"></param>
+        /// <returns></returns>
+        bool FloatEquals(float num1, float num2, float threshold = 0.0001f)
         {
             return Math.Abs(num1 - num2) < threshold;
         }
 
 		/// <summary>
-		/// Returns true, if the music volume or the music mute status been changed
+		/// Music 是否被修改
 		/// </summary>
 		private bool IsMusicAltered()
 		{
-			// Get changed status of music mute or the music volume
             bool flag = musicOn != _musicOn || musicOn != !musicSource.mute || !FloatEquals(currentMusicVol, _musicVolume);
 
-			// If music is using a mixer group
+            
 			if (_musicMixerGroup != null && !string.IsNullOrEmpty(_volumeOfMusicMixer.Trim()))
 			{
 				float vol;
-				// Get the music volume from the music mixer 
 				_musicMixerGroup.audioMixer.GetFloat(_volumeOfMusicMixer, out vol);
-				// Make it a range of [0 - 1] to suit the music source volume and AudioManager volume
 				vol = NormaliseVolume(vol);
 
                 return flag || !FloatEquals(currentMusicVol, vol);
@@ -568,21 +350,15 @@ namespace Core.Audio
 			return flag;
 		}
 
-		/// <summary>
-		/// Returns true, if the sound effect volume or the sound effect mute status been changed
-		/// </summary>
+		
 		private bool IsSoundFxAltered()
 		{
-			// Get changed status of sound effect mute or the sound effect volume
             bool flag = _soundFxOn != sfxOn || !FloatEquals(currentSfxVol, _soundFxVolume);
 
-			// If sound effect is using a mixer group
 			if (_soundFxMixerGroup != null && !string.IsNullOrEmpty(_volumeOfSFXMixer.Trim()))
 			{
 				float vol;
-				// Get the sound effect volume from the sound effects mixer 
 				_soundFxMixerGroup.audioMixer.GetFloat(_volumeOfSFXMixer, out vol);
-				// Make it a range of [0 - 1] to suit the AudioManager
 				vol = NormaliseVolume(vol);
 
                 return flag || !FloatEquals(currentSfxVol, vol);
@@ -591,30 +367,23 @@ namespace Core.Audio
 			return flag;
 		}
 
+	
 		/// <summary>
-		/// Performs an overlapping play on the current music to produce a smooth transition from one music to another.
-		/// As the current music decreases, the next music increases to eventually overlap and overshadow it
-		/// In short, it hides any silent gaps that could occur during fading in and fading out
-		/// Also known as gapless playback.
+		/// 音乐渐入和渐出
 		/// </summary>
 		private void CrossFadeBackgroundMusic()
 		{
 			if (backgroundMusic.MusicTransition == MusicTransition.CrossFade)
 			{
-				// If transition is enroute
+				//名字是否一样
 				if (musicSource.clip.name != backgroundMusic.NextClip.name)
 				{
-					// Decrease the background music volume options 
 					transitionTime -= Time.deltaTime;
 
 					musicSource.volume = Mathf.Lerp(0, musicVolCap, transitionTime / backgroundMusic.TransitionDuration);
-
-					// Coverting the decrement of the music volume to get the increment of the crossfade
 					crossfadeSource.volume = Mathf.Clamp01(musicVolCap - musicSource.volume);
-					// Also set the mute status to the same as the music source
 					crossfadeSource.mute = musicSource.mute;
 
-					// When transition is done
 					if (musicSource.volume <= 0.00f)
 					{
 						SetBGMVolume(musicVolCap);
@@ -623,40 +392,26 @@ namespace Core.Audio
 				}
 			}
 		}
-
-		/// <summary>
-		/// Gradually increases or decreases the volume of the background music
-		/// Fade Out occurs by gradually reducing the volume of the current music, such that it goes from the original volume to absolute silence
-		/// Fade In occurs by gradually increasing the volume of the next music, such that it goes from absolute silence to the original volume
-		/// </summary>
+		
 		private void FadeOutFadeInBackgroundMusic()
 		{
 			if (backgroundMusic.MusicTransition == MusicTransition.LinearFade)
 			{
-				// If fading in
 				if (musicSource.clip.name == backgroundMusic.NextClip.name)
 				{
-					// Gradually increase volume of clip
 					transitionTime += Time.deltaTime;
-
 					musicSource.volume = Mathf.Lerp(0, musicVolCap, transitionTime / backgroundMusic.TransitionDuration);
 
-					// When at original volume
 					if (musicSource.volume >= musicVolCap)
 					{
 						SetBGMVolume(musicVolCap);
 						PlayBackgroundMusic(backgroundMusic.NextClip, musicSource.time, savedPitch);
 					}
 				}
-				// If fading out
 				else
 				{
-					// Gradually decrease volume of clip
 					transitionTime -= Time.deltaTime;
-
 					musicSource.volume = Mathf.Lerp(0, musicVolCap, transitionTime/backgroundMusic.TransitionDuration);
-
-					// When volume is silent - fading out is done
 					if (musicSource.volume <= 0.00f)
 					{
 						musicSource.volume = transitionTime = 0;
@@ -667,7 +422,7 @@ namespace Core.Audio
 		}
 
 		/// <summary>
-		/// Update function called every frame
+		/// Update
 		/// </summary>
 		IEnumerator OnUpdate()
 		{
@@ -675,10 +430,9 @@ namespace Core.Audio
 			{
 				ManageSoundEffects();
 
-				// Updates value if music volume or music mute status has been changed
+				
 				if (IsMusicAltered())
 				{
-					//musicSource.mute = !_musicOn;
 					ToggleBGMMute(!musicOn);
 
                     if (!FloatEquals(currentMusicVol, _musicVolume))
@@ -697,10 +451,9 @@ namespace Core.Audio
 					SetBGMVolume(currentMusicVol);
 				}
 
-				// Updates value if sound effects volume or sound effects mute has been changed
+			
 				if (IsSoundFxAltered())
 				{
-					//sfxOn = _soundFxOn;
 					ToggleSFXMute(!sfxOn);
 
                     if (!FloatEquals(currentSfxVol,_soundFxVolume))
@@ -719,7 +472,6 @@ namespace Core.Audio
 					SetSFXVolume(currentSfxVol);
 				}
 
-				// Update the cross fade transition for music
 				if (crossfadeSource != null)
 				{
 					CrossFadeBackgroundMusic();
@@ -728,7 +480,6 @@ namespace Core.Audio
 				}
 				else
 				{
-					// Update the linear fade (fade out, fade in) transition for music
 					if (backgroundMusic.NextClip != null)
 					{
 						FadeOutFadeInBackgroundMusic();
@@ -745,21 +496,12 @@ namespace Core.Audio
 
 		#region Background Music Functions
 
-		/// <summary>
-		/// Plays a clip from the specified audio source.
-		/// Creates and assigns an audio source component if the refrence is null.
-		/// </summary>
-		/// <param name="audio_source">Reference to the audio source / channel</param>
-		/// <param name="clip">The audio data to play</param>
-		/// <param name="playback_position">Play position of the clip.</param>
-		/// <param name="pitch">Pitch level of the clip.</param>
+		
 		private void PlayMusicFromSource(ref AudioSource audio_source, AudioClip clip, float playback_position, float pitch)
 		{
 			try
 			{
-				// Set the current playing clip
 				audio_source.clip = clip;
-				// Start playing the source clip at the destinated play back position
 				audio_source.time = playback_position;
 				audio_source.pitch = pitch = Mathf.Clamp (pitch, -3f, 3f);
 				audio_source.Play();
@@ -774,21 +516,12 @@ namespace Core.Audio
 			}
 		}
 
-		/// <summary>
-		/// Plays the current audio clip from the music source of the background music
-		/// </summary>
-		/// <param name="clip">The audio data to play</param>
-		/// <param name="playback_position">Play position of the clip</param>
-		/// <param name="pitch">Pitch level of the clip.</param>
+		
 		private void PlayBackgroundMusic(AudioClip clip, float playback_position, float pitch)
 		{
-			// Set the music source to play the current music
 			PlayMusicFromSource(ref musicSource, clip, playback_position, pitch);
-			// Remove the call to next playing clip on queue
 			backgroundMusic.NextClip = null;
-			// Set the current playing clip
 			backgroundMusic.CurrentClip = clip;
-			// Get rid of the crossfade source if there is one
 			if (crossfadeSource != null)
 			{
 				Destroy(crossfadeSource);
@@ -798,31 +531,20 @@ namespace Core.Audio
 
 		#region Public Background Music API 
 
-		/// <summary>
-		/// Plays a background music. 
-		/// Only one background music can be active at a time.
-		/// </summary>
-		/// <param name="clip">The audio data to play</param>
-		/// <param name="transition">How should the music change from the current to the next </param>
-		/// <param name="transition_duration">Time in secs it takes to transition.</param>
-		/// <param name="volume">Playback volume.</param>
-		/// <param name="pitch">Pitch level of the clip.</param>
-		/// <param name="playback_position">Play position of the clip.</param>
+		
 		public void PlayBGM(AudioClip clip, MusicTransition transition, float transition_duration, float volume, float pitch, float playback_position = 0)
 		{
-			// Stop if trying to play thesame music
+		
 			if (clip == null || backgroundMusic.CurrentClip == clip)
 			{
 				return;
 			}
-
-			// If it's the first music to be played then switch over immediately - meaning no transition effect
+			
 			if (backgroundMusic.CurrentClip == null || transition_duration <= 0)
 			{
 				transition = MusicTransition.Swift;
 			} 
-
-			// Start playing from the beginning if there is no effect mode
+			
 			if (transition == MusicTransition.Swift)
 			{
 				PlayBackgroundMusic(clip, playback_position, pitch);
@@ -830,7 +552,7 @@ namespace Core.Audio
 			}
 			else
 			{
-				// Stop!!! Currenty performing a transition and has not finished
+				
 				if (backgroundMusic.NextClip != null)
 				{
 					Debug.LogWarning("Trying to perform a transition on the background music while one is still active");
@@ -1540,19 +1262,11 @@ namespace Core.Audio
 
 		#region Player Prefs Functions
 
-		/// <summary>
-		/// Get the volume of the background music from disk
-		/// </summary>
-		/// <returns></returns>
 		private float LoadBGMVolume()
 		{
 			return PlayerPrefs.HasKey(BgMusicVolKey) ? PlayerPrefs.GetFloat(BgMusicVolKey) : _musicVolume;
 		}
 
-		/// <summary>
-		/// Get the volume of the sound effect from disk
-		/// </summary>
-		/// <returns></returns>
 		private float LoadSFXVolume()
 		{
 			return PlayerPrefs.HasKey(SoundFxVolKey) ? PlayerPrefs.GetFloat(SoundFxVolKey) : _soundFxVolume;
@@ -1566,10 +1280,6 @@ namespace Core.Audio
 			return integer == 0 ? false : true;
 		}
 
-		/// <summary>
-		/// Get the mute or disabled status of the background music from disk
-		/// </summary>
-		/// <returns>Returns the value of the background music mute key from the saved preferences if it exists or the defaut value if it does not</returns>
 		private bool LoadBGMMuteStatus()
 		{
 			return PlayerPrefs.HasKey(BgMusicMuteKey) ? ToBool(PlayerPrefs.GetInt(BgMusicMuteKey)) : _musicOn;
