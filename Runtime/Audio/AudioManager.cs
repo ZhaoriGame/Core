@@ -634,6 +634,7 @@ namespace Core.Audio
 			PlayBGM(clip, MusicTransition.Swift, 1f, _musicVolume, 1f);
 		}
 
+		
 		/// <summary>
 		/// Plays a background music. 
 		/// Only one background music can be active at a time.
