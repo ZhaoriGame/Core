@@ -50,5 +50,6 @@ namespace Core.Load
             StartCoroutine(loaderCtrl.LoadAssetsIEnumerator(path, typeof(T), callback));
         }
         
+        
     }
 }
