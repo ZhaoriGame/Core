@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Tools
+namespace Rumtime.Tools
 {
     public static class PathUtils
     {

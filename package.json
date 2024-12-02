@@ -3,11 +3,13 @@
 "displayName": "Core",
 "description": "Some Code of Core",
 "version": "1.0.1",
-"unity": "2019.3",
+"unity": "2022.3",
 "license": "MIT",
  "author": {
   "name": "朝日"
  },
 "dependencies": {
+    "com.unity.addressables": "1.21.19",
+    "com.unity.textmeshpro": "3.0.8"
  }
 }
